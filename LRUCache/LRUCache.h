@@ -2,7 +2,6 @@
 // Created by puneet on 10/02/17.
 //
 
-//NOT thread safe
 
 #ifndef LRUCACHE_LRUCACHE_H
 #define LRUCACHE_LRUCACHE_H
@@ -12,36 +11,61 @@
 #include <list>
 #include <iostream>
 
+/** @brief it is a simple implementation of an LRU cache with constant time complexity.
+ * This uses 'number of elements and not size' as it's bounded type
+ * It uses an unordered_map and a doubly link-list to achieve the desired behavior.
+ * Please note that this implementation is not thread-safe, and user is supposed to use write-locks, before
+ * doing any operation (including find) on this cache
+ */
 template <typename Key, typename Value, size_t SIZE>
 class LRUCache {
 
 public:
-    using Key_t = Key;
-    using Value_t = Value;
-    using Object_t = std::pair<Key_t, Value_t>;
+    using key_type = Key;
+    using mapped_type = Value;
+    using value_type = std::pair<const key_type, mapped_type>;
 
 private:
-    std::list<Key_t> last_used_list;
-    std::unordered_map<Key_t, std::pair<Value_t, decltype(last_used_list.begin())>> main_cache;
+    using last_used_list_t = std::list<const key_type* const>;
+    using main_cache_t = std::unordered_map<key_type, std::pair<mapped_type, typename last_used_list_t::const_iterator>> ;
+
+    last_used_list_t last_used_list_;
+    main_cache_t main_cache_;
 
 public:
-    //insert an element with an existing key, will silently over-write
-    void insert(Object_t object) ;
-    void remove(const Object_t& object);
-    auto find(const Object_t& object);
+    /** @brief insert a element in cache
+     * @param in object pair<key, value> to insert
+     * @param out none
+     */
+    void insert(value_type object) ;
 
+    /** @brief remove an entry corresponding to a given key
+     * @param in key key to remove
+     */
+    void remove(const key_type& key);
+
+    /** @brief find an entry corresponding to a given key
+     * @param in key key
+     * @param out value value
+     * @return true if found, false otherwise
+     */
+    bool find(const key_type& key, value_type& value);
+
+    /** @todo should be debug only
+     * show the content sorted by the LRU
+     */
     template<typename T>
     void show_cache(T&& os) {
-        for (auto x : last_used_list) {
-            os << x << " : " << main_cache[x].first << std::endl;
+        for (const auto& x : last_used_list_) {
+            os << *x << " : " << main_cache_[*x].first << std::endl;
         }
     }
 
 private:
     template <typename Itr>
     void remove_from_list(Itr&& itr, bool remove_from_main) {
-        if (remove_from_main) main_cache.erase(*itr);
-        last_used_list.erase(itr);
+        if (remove_from_main) main_cache_.erase(**itr);
+        last_used_list_.erase(itr);
     }
 
 
@@ -49,30 +73,37 @@ private:
 
 template<typename Key, typename Value, size_t SIZE>
 inline
-void LRUCache<Key, Value, SIZE>::insert(Object_t object) {
-    auto incache_element = main_cache.find(object.first);
-    if (incache_element != main_cache.end()) {
-        auto itr_to_remove = incache_element->second.second;
-        remove_from_list(itr_to_remove, false);
-    }
-    else if (last_used_list.size() == SIZE) {
-        main_cache.erase(object.first);
-        last_used_list.pop_back();
+void LRUCache<Key, Value, SIZE>::insert(value_type object) {
+    //add new element in the main cache and at the end of list
+    auto inserted = main_cache_.emplace(object.first, make_pair(object.second, last_used_list_.cend()));
+    auto& incache_element = inserted.first;
+    last_used_list_.push_back(&incache_element->first);
+
+    //duplicate entry.
+    //remove the previous one
+    if (!inserted.second) {
+        remove_from_list(incache_element->second.second, false/*remove_from_main*/);
     }
 
-    last_used_list.push_front(object.first);
+    // if size is full, kick out the one at the front (oldest) from cache
+    if (last_used_list_.size() > SIZE) {
+        remove_from_list(last_used_list_.cbegin(), true/*remove_from_main*/);
+    }
 
-    main_cache[object.first] = make_pair(object.second, last_used_list.begin());
+    //update the mapped_type with correct value and iterator address
+    incache_element->second.first = object.second;
+    incache_element->second.second = prev(last_used_list_.cend());
+
 };
 
 template<typename Key, typename Value, size_t SIZE>
 inline
-void LRUCache<Key, Value, SIZE>::remove(Object_t object) {
+void LRUCache<Key, Value, SIZE>::remove(const key_type& key) {
 }
 
 template<typename Key, typename Value, size_t SIZE>
 inline
-void LRUCache<Key, Value, SIZE>::find(Object_t object) {
+bool LRUCache<Key, Value, SIZE>::find(const key_type& key, value_type& value) {
 }
 
 
