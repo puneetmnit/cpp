@@ -20,7 +20,7 @@ namespace detail {
     void print_tup(Stream& os, Tuple&& tup, std::index_sequence<I...>) {
         (void)std::initializer_list<int>{(os << std::get<I>(tup) << (I==sizeof...(I)-1?"": ","), 0)...} ;
     }
-}
+}   //namespace detail
 
 template<typename Stream, typename ...Args>
 auto& operator<<(Stream& os, const std::tuple<Args...>& tup) {
