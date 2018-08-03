@@ -1,6 +1,11 @@
 /**@brief some generic helper functions and structs 
 */
 
+#include <type_traits>
+#include <tuple>
+#include <utility>
+#include <initializer_list>
+
 namespace utils {
 
 namespace detail {
