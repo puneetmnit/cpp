@@ -1,5 +1,8 @@
 #include <vector>
+namespace utils {
 
+/** gets the underlying type in a series of nested vectors
+*/
 template<typename T>
 struct vec_type;
 
@@ -13,7 +16,8 @@ struct vec_type<std::vector<std::vector<T>>> {
     using type = typename vec_type<std::vector<T>>::type;
 };
 
-
+/** flatten out a vector of vector of vector of ... T to a vector<T>
+*/
 template<typename T>
 auto flatten(const std::vector<T>& src) {
     return src;
@@ -29,4 +33,4 @@ auto flatten(const std::vector<std::vector<T>>& src) {
     return dest;
 }
                       
-    
+} //namespace utils    
