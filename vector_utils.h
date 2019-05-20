@@ -34,3 +34,16 @@ auto flatten(const std::vector<std::vector<T>>& src) {
 }
                       
 } //namespace utils    
+
+if #UNIT_TEST
+#include <iostream>
+#include <type_traits>
+int main() {
+    //vector<vector<int>> v { {9,10}, {11} } ;
+    //vector<vector<vector<int>>> v { { {1,2,3}, {4,5,6}, {7,8} }, { {9,10}, {11} } };
+    vector<vector<vector<vector<int>>>> v { { { {1,2,3}, {4,5,6}, {7,8} }, { {9,10}, {11} } }, { { {1,2,3}, {4,5,6}, {7,8} }, { {9,10}, {11} } } };
+    static_assert(is_same<int, vec_type<decltype(v)>::type>::value, "not same");
+    auto v2 = flatten(v);
+    for (const auto& i : v2) std::cout << i << ", ";
+    }
+#endif
