@@ -35,7 +35,7 @@ auto flatten(const std::vector<std::vector<T>>& src) {
                       
 } //namespace utils    
 
-if #UNIT_TEST
+#ifdef UNIT_TEST
 #include <iostream>
 #include <type_traits>
 int main() {
