@@ -9,7 +9,7 @@
 * @param InputIt2 start2 : start of second range. It must be at-least as big as the first range. If not, the result is undefined.
 * @param OutIt out : start of destination range.  It must be at-least as big as the first range. If not, the result is undefined.
 * returns : void
-* 
+*/
 template<typename InputIt1, typename InputIt2, typename OutIt>
 void zip(InputIt1 start1, InputIt1 end1, InputIt2 start2, OutIt out)  {
     std::inner_product(start1, end1, start2, out, 
