@@ -32,17 +32,7 @@ namespace detail {
 
 }  //namespace detail
     
-//helper function to print type of give T
-template<class Stream, typename ...T>
-void print_type (Stream&& os, T&&... ) {
-    os << __PRETTY_FUNCTION__ << "\n";
-}
-
-template<class Stream, typename ...T>
-void print_type (Stream&& os) {
-    os << __PRETTY_FUNCTION__ << "\n";
-}
-
+    
 //print tuple
 template<typename Stream, typename ...Args>
 auto& operator<<(Stream& os, const std::tuple<Args...>& tup) {
