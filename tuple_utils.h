@@ -1,6 +1,7 @@
 /**@brief some generic helper functions and structs 
 */
 
+#include "macros.h"
 #include <type_traits>
 #include <tuple>
 #include <utility>
@@ -11,7 +12,7 @@ namespace utils {
 namespace detail {
     template<typename Stream, typename Tuple, size_t ...I>
     void print_tup(Stream& os, Tuple&& tup, std::index_sequence<I...>) {
-    #if __cplusplus >= 201703L
+    #ifdef CPP17
     // c++17 fold expressions
         os << ... << (os << (I>0 ? ',' : ''), std::get<I>(std::forward<Tuple>(tup))));
     #else
