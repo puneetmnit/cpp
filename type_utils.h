@@ -4,14 +4,14 @@ namespace type_utils {
 
 //helper function to print type of given Ts...
 template<class Stream, typename ...T>
-__MAYBE_UNUSED__
+MAYBE_UNUSED
 Stream& print_type (Stream& os, T&&... ) {
     os << __PRETTY_FUNCTION__ << "\n";
     return os;
 }
 
 template<class Stream, typename ...T>
-__MAYBE_UNUSED__
+MAYBE_UNUSED
 Stream& print_type (Stream& os) {
     os << __PRETTY_FUNCTION__ << "\n";
     return os;
