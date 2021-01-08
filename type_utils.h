@@ -21,4 +21,21 @@ Stream& print_type (Stream& os) {
     return os;
 }
 
+/** 
+  * metafunction to transform a meta-list to another meta-list after applying the provided MetaFunction.
+  *
+  * something like what std::transform do to values
+  */
+template<template<class...>typename MetaF, typename TypeCont>
+struct transform;
+
+template<template<class...>typename MetaF, template<class...> typename TypeCont, typename ...Types>
+struct transform<MetaF, TypeCont<Types...>> {
+    using type = TypeCont<typename MetaF<Types>::type...>;
+};
+
+template<template<class...>typename MetaF, typename TypeCont>
+using transform_t = typename transform<MetaF, TypeCont>::type;
+
+
 } //namespace type_utils
